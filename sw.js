@@ -2,9 +2,8 @@
    sw.js — service worker: кэш статики, офлайн-режим.
 ========================================================= */
 
-const CACHE_NAME = "diary-v1";
+const CACHE_NAME = "diary-v3";
 
-/* Что кэшируем при первой загрузке */
 const PRECACHE = [
   "./",
   "./index.html",
@@ -28,19 +27,23 @@ const PRECACHE = [
   "./manifest.json",
 ];
 
-/* ---------- Установка: кэшируем статику ---------- */
+/* ---------- Установка: кэшируем по одному, не падаем если что-то не скачалось ---------- */
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE).catch((e) => {
-        console.warn("[sw] ошибка precache:", e);
-      });
+    caches.open(CACHE_NAME).then(async (cache) => {
+      for (const url of PRECACHE) {
+        try {
+          await cache.add(url);
+        } catch (e) {
+          console.warn("[sw] не удалось кэшировать:", url, e.message);
+        }
+      }
     }),
   );
   self.skipWaiting();
 });
 
-/* ---------- Активация: чистим старые версии ---------- */
+/* ---------- Активация ---------- */
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -54,38 +57,46 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-/* ---------- Fetch: стратегия ---------- */
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
+/* ---------- Fetch ---------- */
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  /* API-запросы (push, pull, backup) — только сеть, без кэша */
-  if (url.pathname.startsWith("/api/")) {
-    return; /* пропускаем */
-  }
+  /* API — только сеть */
+  if (url.pathname.startsWith("/api/")) return;
 
-  /* Внешние запросы (CDN, Telegram) — не трогаем */
-  if (url.origin !== self.location.origin) {
+  /* Внешние CDN — не трогаем */
+  if (url.origin !== self.location.origin) return;
+
+  if (req.method !== "GET") return;
+
+  /* Картинки — cache-first */
+  const isStatic = /\.(png|jpg|jpeg|svg|ico|webmanifest)$/i.test(url.pathname);
+  if (isStatic) {
+    event.respondWith(
+      caches.match(req).then((cached) => cached || fetch(req)),
+    );
     return;
   }
 
-  /* Только GET */
-  if (req.method !== "GET") return;
-
-  /* ---------- Static: cache-first с фоновым обновлением ---------- */
+  /* HTML/JS/CSS — network-first, кэш — только если сети нет */
   event.respondWith(
-    caches.match(req).then((cached) => {
-      const fetchPromise = fetch(req)
-        .then((res) => {
-          if (res && res.status === 200) {
-            const copy = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-          }
-          return res;
-        })
-        .catch(() => cached);
-
-      return cached || fetchPromise;
-    }),
+    fetch(req)
+      .then((res) => {
+        if (res && res.status === 200) {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+        }
+        return res;
+      })
+      .catch(() =>
+        caches.match(req).then((cached) => cached || Response.error()),
+      ),
   );
 });
