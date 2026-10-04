@@ -3261,3 +3261,302 @@ body.light .subtask-delete:hover {
     padding: 20px;
   }
 }
+/* =========================================================
+   МОБИЛЬНЫЙ ФИКС: запрет горизонтального скролла
+========================================================= */
+
+/* Общий запрет overflow по X */
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden !important;
+}
+
+@media (max-width: 768px) {
+  /* Все элементы не шире экрана */
+  * {
+    max-width: 100%;
+  }
+
+  /* Главный контейнер */
+  body > div.flex.h-screen {
+    display: block !important;
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+
+  /* main занимает всю ширину */
+  main {
+    width: 100% !important;
+    max-width: 100vw !important;
+    padding: 14px !important;
+    padding-bottom: 90px !important;
+    overflow-x: hidden !important;
+  }
+
+  /* ---------- ЗАДАЧИ — перестроение кнопок вниз ---------- */
+  .task-item {
+    display: grid !important;
+    grid-template-columns: 28px 1fr;
+    grid-template-areas:
+      "checkbox content"
+      ".        actions";
+    row-gap: 8px;
+    column-gap: 10px;
+    padding: 12px !important;
+  }
+
+  .task-item .checkbox {
+    grid-area: checkbox;
+    margin-top: 2px;
+  }
+
+  .task-content {
+    grid-area: content;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* Кнопки действий — вниз, в ряд */
+  .task-item .timer-btn,
+  .task-item .pomodoro-btn,
+  .task-item .ai-split-btn,
+  .task-item .priority-flag,
+  .task-item .task-delete {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+    margin-top: 0 !important;
+    opacity: 1 !important;
+  }
+
+  /* Оборачиваем кнопки в flex-ряд внизу */
+  .task-item .timer-btn {
+    grid-area: actions;
+    justify-self: start;
+  }
+
+  /* Более простое решение: кнопки в строку внизу */
+  .task-item {
+    grid-template-columns: 28px 1fr auto auto auto auto auto;
+    grid-template-areas: "checkbox content timer pomo ai prio del";
+    align-items: center;
+    column-gap: 6px;
+  }
+
+  .task-item .timer-btn {
+    grid-area: timer;
+  }
+  .task-item .pomodoro-btn {
+    grid-area: pomo;
+  }
+  .task-item .ai-split-btn {
+    grid-area: ai;
+  }
+  .task-item .priority-flag {
+    grid-area: prio;
+    width: 14px !important;
+    height: 14px !important;
+  }
+  .task-item .task-delete {
+    grid-area: del;
+    opacity: 0.6 !important;
+  }
+
+  .task-title {
+    font-size: 13px !important;
+    line-height: 1.35;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .task-meta {
+    gap: 4px !important;
+    margin-top: 4px;
+  }
+
+  .tag,
+  .due-badge,
+  .repeat-badge,
+  .time-spent {
+    font-size: 10px !important;
+    padding: 1px 6px !important;
+  }
+
+  /* ---------- КАРТОЧКИ / ЗАГОЛОВКИ ---------- */
+  .card {
+    padding: 14px !important;
+    border-radius: 12px !important;
+  }
+
+  h1 {
+    font-size: 20px !important;
+    word-break: break-word;
+  }
+  h2 {
+    font-size: 13px !important;
+  }
+
+  /* Шапка с метриками — переносим */
+  header .flex.items-end.justify-between {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  /* Метрики (3/5, время, помидоры, часы) — в строку с переносом */
+  .text-sm.text-muted.flex.items-center.gap-4 {
+    flex-wrap: wrap;
+    gap: 8px 12px !important;
+    font-size: 12px !important;
+  }
+
+  /* ---------- МОДАЛКИ ---------- */
+  .modal {
+    max-width: calc(100vw - 20px) !important;
+    margin: 10px;
+    padding: 18px !important;
+  }
+
+  /* Опции формы задачи — в одну колонку */
+  .task-form-options {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  .task-option {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Поля ввода */
+  .task-input,
+  .task-option-select,
+  .subtask-add-input {
+    font-size: 14px !important;
+  }
+
+  /* ---------- ТАБЛИЦА (Аналитика) ---------- */
+  .stat-table {
+    font-size: 11px !important;
+    min-width: 0 !important;
+  }
+  .stat-table thead th,
+  .stat-table tbody td {
+    padding: 6px 8px !important;
+  }
+  .stat-table thead th {
+    font-size: 10px !important;
+  }
+  /* Обёртка таблицы уже имеет overflow-x-auto — оставляем */
+  .overflow-x-auto {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ---------- ТАЙМЛАЙН ---------- */
+  .timeline-container {
+    margin-left: 40px !important;
+    padding-right: 4px !important;
+  }
+  .timeline-hour {
+    left: -40px !important;
+  }
+  .timeline-hour-label {
+    width: 32px !important;
+    font-size: 10px !important;
+  }
+  .timeline-task {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+  }
+  .timeline-task-title {
+    font-size: 12px !important;
+  }
+  .timeline-task-time {
+    font-size: 10px !important;
+  }
+
+  /* ---------- БЛОКНОТ ---------- */
+  .notes-layout {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .notes-sidebar {
+    max-height: 45vh;
+  }
+  .notes-editor {
+    min-height: 60vh;
+    padding: 14px !important;
+  }
+  .note-title-input {
+    font-size: 16px !important;
+  }
+
+  /* ---------- ЗДОРОВЬЕ ---------- */
+  .exercise-add-row {
+    grid-template-columns: 1fr 60px 36px !important;
+    gap: 6px !important;
+  }
+  .exercise-select,
+  .exercise-duration {
+    font-size: 12px !important;
+    padding: 7px 8px !important;
+  }
+
+  /* ---------- ГРАФИКИ ---------- */
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  .h-72,
+  .h-64,
+  .h-56 {
+    height: auto !important;
+    min-height: 220px;
+    position: relative;
+  }
+
+  /* ---------- МОДАЛКА ПОМОДОРО ---------- */
+  .pomodoro-box {
+    max-width: calc(100vw - 20px) !important;
+    margin: 10px;
+    padding: 24px 18px 20px !important;
+  }
+  .pomodoro-time {
+    font-size: 56px !important;
+  }
+  .pomodoro-presets {
+    flex-wrap: wrap;
+  }
+  .pomodoro-controls {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pomodoro-btn-primary {
+    padding: 10px 24px;
+    font-size: 13px;
+  }
+  .pomodoro-btn-secondary {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  /* ---------- САЙДБАР — точно спрятан ---------- */
+  aside {
+    display: none !important;
+  }
+
+  /* ---------- МОДАЛКА ЛОГИНА / прочие ---------- */
+  .lock-box,
+  .modal-backdrop > div {
+    max-width: calc(100vw - 20px) !important;
+  }
+}
+
+/* Планшеты: чуть попросторнее */
+@media (min-width: 769px) and (max-width: 1024px) {
+  main {
+    padding: 20px !important;
+  }
+}
