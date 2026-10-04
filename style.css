@@ -3090,3 +3090,174 @@ body.light .subtask-delete:hover {
   color: #ef4444;
   text-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
 }
+/* =========================================================
+   МОБИЛЬНАЯ ВЁРСТКА (PWA)
+========================================================= */
+
+/* Нижняя панель навигации — показывается только на мобильном */
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Прячем сайдбар */
+  aside.chat-sidebar,
+  body > div.flex.h-screen > aside {
+    display: none !important;
+  }
+
+  /* Основной контент — на всю ширину */
+  main {
+    padding: 16px !important;
+    padding-bottom: 90px !important; /* место под нижнюю панель */
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  /* Отключаем фиксированную высоту body — пусть скроллится */
+  body,
+  body.gradient-bg,
+  html {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Все grid'ы — в одну колонку */
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Заголовки меньше */
+  h1.text-2xl {
+    font-size: 20px !important;
+  }
+  h1.text-3xl {
+    font-size: 24px !important;
+  }
+
+  /* Задачи — компактнее */
+  .task-item {
+    padding: 10px;
+    gap: 8px;
+  }
+  .task-title {
+    font-size: 13px;
+  }
+
+  /* Кнопки действий у задачи — с меньшим отступом */
+  .timer-btn,
+  .pomodoro-btn,
+  .ai-split-btn,
+  .priority-flag {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+
+  /* Модалки — почти на всю ширину */
+  .modal {
+    max-width: calc(100vw - 24px) !important;
+    margin: 12px;
+  }
+
+  /* Таймлайн — компактнее */
+  .timeline-container {
+    margin-left: 44px !important;
+  }
+  .timeline-hour {
+    left: -44px !important;
+  }
+
+  /* Блокнот — одной колонкой */
+  .notes-layout {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+  .notes-sidebar {
+    max-height: 40vh;
+  }
+
+  /* Bottom-nav — показываем */
+   .mobile-nav {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    height: 68px;
+    background: rgba(12, 12, 18, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid #23232d;
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  body.light .mobile-nav {
+    background: rgba(255, 255, 255, 0.95);
+    border-top-color: #e2e2ea;
+  }
+
+  .mobile-nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: transparent;
+    border: none;
+    color: #8a8a99;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 0;
+    transition: color 0.15s ease;
+  }
+
+  .mobile-nav-btn .icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .mobile-nav-btn.active {
+    color: #c4b5fd;
+  }
+
+  body.light .mobile-nav-btn.active {
+    color: #7c3aed;
+  }
+
+  /* Кнопки экспорта/темы в мобильном — прячем (они в отдельном меню) */
+  .mobile-settings-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: transparent;
+    border: none;
+    color: #8a8a99;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 0;
+  }
+  .mobile-settings-btn .icon {
+    font-size: 20px;
+  }
+}
+
+/* Планшеты — компромисс */
+@media (min-width: 769px) and (max-width: 1024px) {
+  main {
+    padding: 20px;
+  }
+}
