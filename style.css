@@ -1,0 +1,3092 @@
+/* =========================================================
+   style.css
+========================================================= */
+
+:root {
+  --accent: #8b5cf6;
+  --accent-2: #6366f1;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a36 transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #23232d;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #34344a;
+  background-clip: content-box;
+}
+
+.card {
+  background: rgba(18, 18, 24, 0.72);
+  border: 1px solid #23232d;
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.02) inset,
+    0 10px 30px -20px rgba(0, 0, 0, 0.8);
+}
+
+/* ---------- Навигация ---------- */
+.nav-item {
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #a2a2b4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+.nav-item:hover {
+  background: #16161d;
+  color: #e2e2ea;
+}
+.nav-item.active {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.18),
+    rgba(99, 102, 241, 0.08)
+  );
+  color: #ffffff;
+  border-color: rgba(139, 92, 246, 0.35);
+}
+.nav-item.hidden {
+  display: none;
+}
+
+/* =========================================================
+   ФОРМА ЗАДАЧИ
+========================================================= */
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.task-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.task-input {
+  flex: 1;
+  background: #16161d;
+  border: 1px solid #23232d;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #e2e2ea;
+  outline: none;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.task-input::placeholder {
+  color: #6b6b7b;
+}
+.task-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+}
+
+.task-add-btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+}
+.task-add-btn:hover {
+  background: #7c3aed;
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.35);
+}
+
+.task-tags-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px dashed rgba(139, 92, 246, 0.3);
+  animation: taskIn 0.2s ease both;
+}
+.task-tags-preview.hidden {
+  display: none;
+}
+.task-tags-preview-label {
+  font-size: 11px;
+  color: #8a8a99;
+  align-self: center;
+}
+
+.task-form-options {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.task-option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+.task-option-label {
+  font-size: 11px;
+  color: #8a8a99;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.task-option-select {
+  background: #16161d;
+  border: 1px solid #23232d;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: #d3d3de;
+  outline: none;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+  width: 100%;
+  color-scheme: dark;
+}
+.task-option-select:hover {
+  border-color: #34344a;
+}
+.task-option-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25);
+}
+.task-option-clear {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #8a8a99;
+  border: 1px solid #23232d;
+  background: transparent;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+.task-option-clear:hover {
+  color: #e2e2ea;
+  border-color: #34344a;
+  background: #16161d;
+}
+
+/* =========================================================
+   ЗАДАЧИ
+========================================================= */
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid #23232d;
+  background: #121218;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    opacity 0.3s ease;
+  animation: taskIn 0.28s ease both;
+}
+.task-item:hover {
+  border-color: #34344a;
+  background: #16161d;
+}
+
+@keyframes taskIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.task-title {
+  position: relative;
+  display: inline-block;
+  transition: color 0.3s ease;
+  word-break: break-word;
+  font-size: 14px;
+  line-height: 1.4;
+  padding-top: 2px;
+}
+.task-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1px;
+  width: 0%;
+  background: currentColor;
+  transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.task-item.done .task-title::after {
+  width: 100%;
+}
+.task-item.done .task-title {
+  color: #6b6b7b;
+}
+.task-item.done {
+  opacity: 0.78;
+}
+
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(139, 92, 246, 0.12);
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+}
+.task-item.done .tag {
+  background: rgba(107, 107, 123, 0.12);
+  color: #8a8a99;
+  border-color: rgba(107, 107, 123, 0.2);
+}
+
+.due-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+.due-badge::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.due-overdue {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.28);
+}
+.due-today {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.28);
+}
+.due-tomorrow {
+  background: rgba(139, 92, 246, 0.12);
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.28);
+}
+.due-soon {
+  background: rgba(99, 102, 241, 0.12);
+  color: #a5b4fc;
+  border-color: rgba(99, 102, 241, 0.25);
+}
+.due-future {
+  background: rgba(107, 107, 123, 0.12);
+  color: #8a8a99;
+  border-color: rgba(107, 107, 123, 0.25);
+}
+.task-item.done .due-badge {
+  opacity: 0.5;
+}
+
+/* Значок повтора */
+.repeat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.repeat-badge svg {
+  width: 10px;
+  height: 10px;
+}
+
+/* Чекбокс */
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid #3a3a4a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  margin-top: 2px;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+.checkbox:hover {
+  border-color: var(--accent);
+}
+.checkbox:active {
+  transform: scale(0.92);
+}
+.task-item.done .checkbox {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  border-color: transparent;
+}
+.checkbox svg {
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+.task-item.done .checkbox svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Флаг приоритета */
+.priority-flag {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid #3a3a4a;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 8px;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.12s ease,
+    box-shadow 0.18s ease;
+}
+.priority-flag:hover {
+  transform: scale(1.25);
+}
+.priority-flag.priority-high {
+  background: #ef4444;
+  border-color: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+.priority-flag.priority-medium {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+}
+.priority-flag.priority-low {
+  background: #10b981;
+  border-color: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.35);
+}
+.task-item.done .priority-flag {
+  opacity: 0.4;
+  box-shadow: none;
+}
+
+.task-delete {
+  opacity: 0;
+  color: #6b6b7b;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 4px;
+  padding: 4px;
+  border-radius: 6px;
+  transition:
+    opacity 0.18s ease,
+    color 0.18s ease,
+    background 0.18s ease;
+}
+.task-item:hover .task-delete {
+  opacity: 1;
+}
+.task-delete:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Подсветка изменённой задачи */
+.task-item.flash {
+  border-color: rgba(139, 92, 246, 0.9) !important;
+  background: rgba(139, 92, 246, 0.18) !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.35) !important;
+  transition:
+    border-color 0.5s ease,
+    background 0.5s ease,
+    box-shadow 0.5s ease;
+}
+
+/* =========================================================
+   ПОДЗАДАЧИ
+========================================================= */
+.subtasks-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.subtasks-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #8a8a99;
+  background: transparent;
+  border: 1px solid #23232d;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.subtasks-toggle-btn:hover {
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.06);
+}
+
+.subtasks-count.done-all {
+  color: #6ee7b7;
+}
+
+.caret {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  font-size: 10px;
+  line-height: 1;
+}
+.caret.open {
+  transform: rotate(90deg);
+}
+
+.subtasks-list {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #23232d;
+  background: rgba(22, 22, 29, 0.6);
+  animation: taskIn 0.2s ease both;
+}
+.subtasks-list.hidden {
+  display: none;
+}
+
+.subtask-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 13px;
+}
+
+.subtask-checkbox {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  border: 1.5px solid #3a3a4a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.subtask-checkbox:hover {
+  border-color: var(--accent);
+}
+.subtask-item.done .subtask-checkbox {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  border-color: transparent;
+}
+.subtask-checkbox svg {
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+.subtask-item.done .subtask-checkbox svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.subtask-title {
+  flex: 1;
+  color: #d3d3de;
+  word-break: break-word;
+  transition: color 0.2s ease;
+}
+.subtask-item.done .subtask-title {
+  color: #6b6b7b;
+  text-decoration: line-through;
+}
+
+.subtask-delete {
+  opacity: 0;
+  color: #6b6b7b;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.subtask-item:hover .subtask-delete {
+  opacity: 1;
+}
+.subtask-delete:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.subtask-add-form {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.subtask-add-input {
+  flex: 1;
+  background: #16161d;
+  border: 1px solid #23232d;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 12px;
+  color: #e2e2ea;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.subtask-add-input::placeholder {
+  color: #6b6b7b;
+}
+.subtask-add-input:focus {
+  border-color: var(--accent);
+}
+
+.subtask-add-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 0.15s ease;
+}
+.subtask-add-btn:hover {
+  background: #7c3aed;
+}
+
+/* =========================================================
+   Переключение разделов
+========================================================= */
+.view {
+  display: none;
+}
+.view.active {
+  display: block;
+  animation: fadeUp 0.28s ease both;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   Метрики
+========================================================= */
+.metric-card {
+  background: rgba(18, 18, 24, 0.72);
+  border: 1px solid #23232d;
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+.metric-card:hover {
+  border-color: rgba(139, 92, 246, 0.35);
+  transform: translateY(-2px);
+}
+.metric-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--accent),
+    var(--accent-2),
+    transparent
+  );
+  opacity: 0.7;
+}
+
+/* =========================================================
+   Таблицы
+========================================================= */
+.stat-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+}
+.stat-table thead th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a8a99;
+  padding: 10px 12px;
+  border-bottom: 1px solid #23232d;
+}
+.stat-table tbody td {
+  padding: 12px;
+  border-bottom: 1px solid #1a1a22;
+  color: #d3d3de;
+}
+.stat-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.stat-table tbody tr {
+  transition: background 0.15s ease;
+}
+.stat-table tbody tr:hover {
+  background: rgba(35, 35, 45, 0.4);
+}
+
+.progress-mini {
+  width: 100%;
+  height: 6px;
+  background: #1c1c26;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-mini > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #6366f1);
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.progress-label {
+  font-size: 12px;
+  color: #8a8a99;
+  margin-top: 4px;
+}
+
+/* =========================================================
+   Роли / селекты / бейджи
+========================================================= */
+.role-select,
+.settings-select {
+  background: #16161d;
+  border: 1px solid #23232d;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: #d3d3de;
+  outline: none;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+  width: 100%;
+}
+.role-select:hover,
+.settings-select:hover {
+  border-color: #34344a;
+}
+.role-select:focus,
+.settings-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+.badge-active {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.25);
+}
+.badge-inactive {
+  background: rgba(107, 107, 123, 0.15);
+  color: #8a8a99;
+  border-color: rgba(107, 107, 123, 0.25);
+}
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.icon-btn {
+  padding: 6px;
+  border-radius: 8px;
+  color: #6b6b7b;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease;
+}
+.icon-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.setting-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* =========================================================
+   Модальные окна
+========================================================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 10, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: modalIn 0.2s ease both;
+}
+.modal-backdrop.hidden {
+  display: none;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  width: 100%;
+  max-width: 420px;
+  background: #121218;
+  border: 1px solid #23232d;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 30px 80px -20px rgba(0, 0, 0, 0.9);
+  animation: modalPop 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-close {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #8a8a99;
+  font-size: 14px;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+.modal-close:hover {
+  background: #1c1c26;
+  color: #ffffff;
+}
+
+/* =========================================================
+   Навигация по дням
+========================================================= */
+.date-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-nav-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid #23232d;
+  background: #121218;
+  color: #a2a2b4;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.1s ease;
+}
+.date-nav-btn:hover {
+  border-color: rgba(139, 92, 246, 0.45);
+  background: #16161d;
+  color: #ffffff;
+}
+.date-nav-btn:active {
+  transform: scale(0.94);
+}
+
+.date-nav-today {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #23232d;
+  background: #121218;
+  color: #a2a2b4;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    color 0.18s ease,
+    background 0.18s ease;
+}
+.date-nav-today:hover {
+  border-color: rgba(139, 92, 246, 0.45);
+  background: #16161d;
+  color: #ffffff;
+}
+.date-nav-today.hidden {
+  display: none;
+}
+
+::selection {
+  background: rgba(139, 92, 246, 0.35);
+  color: #fff;
+}
+/* =========================================================
+   ТАЙМЛАЙН ДНЯ — усиленный контраст
+========================================================= */
+.timeline-container {
+  position: relative;
+  margin-left: 64px;
+  min-height: 400px;
+  padding-right: 8px;
+}
+
+/* Часовые линии */
+.timeline-hour {
+  position: absolute;
+  left: -64px;
+  right: 0;
+  border-top: 1px solid rgba(60, 60, 80, 0.5);
+  pointer-events: none;
+}
+.timeline-hour-label {
+  position: absolute;
+  left: 0;
+  top: -8px;
+  width: 52px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 500;
+  color: #b0b0c0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* Блок задачи на таймлайне */
+.timeline-task {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+  border-left: 4px solid transparent;
+  min-height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.timeline-task:hover {
+  transform: translateX(4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+  filter: brightness(1.15);
+  z-index: 10;
+}
+
+/* Цвета по приоритету — насыщеннее */
+.timeline-task.tl-priority-high {
+  background: linear-gradient(
+    90deg,
+    rgba(239, 68, 68, 0.32),
+    rgba(239, 68, 68, 0.18)
+  );
+  border-left-color: #ef4444;
+}
+.timeline-task.tl-priority-medium {
+  background: linear-gradient(
+    90deg,
+    rgba(245, 158, 11, 0.32),
+    rgba(245, 158, 11, 0.18)
+  );
+  border-left-color: #f59e0b;
+}
+.timeline-task.tl-priority-low {
+  background: linear-gradient(
+    90deg,
+    rgba(16, 185, 129, 0.32),
+    rgba(16, 185, 129, 0.18)
+  );
+  border-left-color: #10b981;
+}
+.timeline-task.tl-priority-none {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.28),
+    rgba(99, 102, 241, 0.14)
+  );
+  border-left-color: #8b5cf6;
+}
+
+.timeline-task-title {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  word-break: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.timeline-task-time {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.timeline-task.done {
+  opacity: 0.55;
+  filter: grayscale(0.3);
+}
+.timeline-task.done .timeline-task-title {
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Список «Без времени» */
+.timeline-unscheduled-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #2e2e3d;
+  background: #16161d;
+  font-size: 13px;
+  font-weight: 500;
+  color: #e2e2ea;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+.timeline-unscheduled-item:hover {
+  border-color: rgba(139, 92, 246, 0.6);
+  background: #1c1c26;
+  transform: translateX(2px);
+}
+.timeline-unscheduled-item.done {
+  opacity: 0.5;
+}
+.timeline-unscheduled-item.done span {
+  text-decoration: line-through;
+}
+
+/* Легенда */
+.timeline-legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.timeline-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #b0b0c0;
+}
+.tl-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 6px currentColor;
+}
+.tl-high {
+  background: #ef4444;
+  color: #ef4444;
+}
+.tl-medium {
+  background: #f59e0b;
+  color: #f59e0b;
+}
+.tl-low {
+  background: #10b981;
+  color: #10b981;
+}
+.tl-none {
+  background: #8b5cf6;
+  color: #8b5cf6;
+}
+
+/* Светлая тема — отдельная версия таймлайна */
+body.light .timeline-hour {
+  border-color: rgba(0, 0, 0, 0.06);
+}
+body.light .timeline-hour-label {
+  color: #5a5a70;
+}
+
+body.light .timeline-task {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+body.light .timeline-task:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+body.light .timeline-task.tl-priority-high {
+  background: linear-gradient(
+    90deg,
+    rgba(239, 68, 68, 0.22),
+    rgba(239, 68, 68, 0.12)
+  );
+}
+body.light .timeline-task.tl-priority-medium {
+  background: linear-gradient(
+    90deg,
+    rgba(245, 158, 11, 0.22),
+    rgba(245, 158, 11, 0.12)
+  );
+}
+body.light .timeline-task.tl-priority-low {
+  background: linear-gradient(
+    90deg,
+    rgba(16, 185, 129, 0.22),
+    rgba(16, 185, 129, 0.12)
+  );
+}
+body.light .timeline-task.tl-priority-none {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.18),
+    rgba(99, 102, 241, 0.1)
+  );
+}
+body.light .timeline-task-title {
+  color: #1a1a2e;
+  text-shadow: none;
+}
+body.light .timeline-task-time {
+  color: rgba(26, 26, 46, 0.7);
+}
+body.light .timeline-task.done .timeline-task-title {
+  color: rgba(26, 26, 46, 0.5);
+}
+body.light .timeline-unscheduled-item {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #1a1a2e;
+}
+body.light .timeline-unscheduled-item:hover {
+  background: #f8f8fc;
+}
+body.light .timeline-legend-item {
+  color: #5a5a70;
+}
+/* =========================================================
+   ТАЙМЕР УЧЁТА ВРЕМЕНИ
+========================================================= */
+.timer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid #23232d;
+  background: #16161d;
+  color: #8a8a99;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 12px;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.timer-btn:hover {
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(139, 92, 246, 0.08);
+}
+.timer-btn.running {
+  color: #fff;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  border-color: transparent;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  animation: timerPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.8);
+  }
+}
+
+/* Отображение затраченного времени */
+.time-spent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(139, 92, 246, 0.1);
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  font-variant-numeric: tabular-nums;
+}
+.time-spent.live {
+  background: rgba(139, 92, 246, 0.22);
+  color: #fff;
+  border-color: rgba(139, 92, 246, 0.6);
+}
+/* ПОМОДОРО */
+.pomodoro-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid #23232d;
+  background: #16161d;
+  color: #8a8a99;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 13px;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.pomodoro-btn:hover {
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.pomodoro-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 10, 0.82);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: modalIn 0.2s ease both;
+}
+.pomodoro-overlay.hidden {
+  display: none;
+}
+
+.pomodoro-box {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: #121218;
+  border: 1px solid #23232d;
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  text-align: center;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 30px 80px -20px rgba(0, 0, 0, 0.9);
+  animation: modalPop 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.pomodoro-box.rest {
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.pomodoro-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #8a8a99;
+  font-size: 14px;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+.pomodoro-close:hover {
+  background: #1c1c26;
+  color: #fff;
+}
+
+.pomodoro-phase {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #8a8a99;
+  margin-bottom: 6px;
+}
+.pomodoro-box.rest .pomodoro-phase {
+  color: #6ee7b7;
+}
+
+.pomodoro-task-title {
+  font-size: 15px;
+  color: #d3d3de;
+  margin-bottom: 24px;
+  word-break: break-word;
+}
+
+.pomodoro-time {
+  font-size: 72px;
+  font-weight: 300;
+  letter-spacing: -2px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 28px;
+  line-height: 1;
+}
+.pomodoro-box.rest .pomodoro-time {
+  color: #6ee7b7;
+}
+
+.pomodoro-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pomodoro-btn-primary {
+  padding: 11px 32px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.1s ease;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+}
+.pomodoro-btn-primary:hover {
+  box-shadow: 0 6px 22px rgba(139, 92, 246, 0.5);
+}
+.pomodoro-btn-primary:active {
+  transform: scale(0.97);
+}
+
+.pomodoro-btn-secondary {
+  padding: 11px 18px;
+  border-radius: 12px;
+  background: #16161d;
+  border: 1px solid #23232d;
+  color: #a2a2b4;
+  font-size: 13px;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.pomodoro-btn-secondary:hover {
+  color: #fff;
+  border-color: #34344a;
+}
+
+.pomodoro-footer {
+  margin-top: 24px;
+  font-size: 12px;
+  color: #6b6b7b;
+}
+/* Пресеты Помодоро */
+.pomodoro-presets {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: -14px 0 24px;
+}
+.preset-btn {
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid #23232d;
+  background: #16161d;
+  color: #8a8a99;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.preset-btn:hover {
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.5);
+}
+.preset-btn.active {
+  color: #fff;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  border-color: transparent;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+/* =========================================================
+   МОДАЛКА ЗАДАЧИ + КНОПКА «Новая задача»
+========================================================= */
+.new-task-btn {
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.14),
+    rgba(99, 102, 241, 0.08)
+  );
+  border: 1px dashed rgba(139, 92, 246, 0.42);
+  color: #c4b5fd;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
+}
+.new-task-btn:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.25),
+    rgba(99, 102, 241, 0.15)
+  );
+  border-color: rgba(139, 92, 246, 0.75);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+.new-task-btn:active {
+  transform: translateY(0);
+}
+
+.task-modal {
+  max-width: 600px;
+}
+.task-modal .task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.task-title {
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.task-title:hover {
+  color: #c4b5fd;
+}
+.task-item.done .task-title:hover {
+  color: #8a8a99;
+}
+/* =========================================================
+   БЛОКНОТ
+========================================================= */
+.notes-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  min-height: 500px;
+}
+@media (max-width: 900px) {
+  .notes-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.notes-sidebar {
+  background: rgba(18, 18, 24, 0.72);
+  border: 1px solid #23232d;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 70vh;
+}
+
+.notes-search {
+  background: #16161d;
+  border: 1px solid #23232d;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: #e2e2ea;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.notes-search::placeholder {
+  color: #6b6b7b;
+}
+.notes-search:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+}
+
+.notes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.note-item {
+  position: relative;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+.note-item:hover {
+  background: #16161d;
+  border-color: #23232d;
+}
+.note-item.active {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.16),
+    rgba(99, 102, 241, 0.06)
+  );
+  border-color: rgba(139, 92, 246, 0.35);
+}
+.note-item.pinned {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.note-pin {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 11px;
+}
+
+.note-item-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #e2e2ea;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+  padding-right: 20px;
+}
+.note-item-preview {
+  font-size: 11px;
+  color: #8a8a99;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.note-item-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.note-item-date {
+  font-size: 10px;
+  color: #6b6b7b;
+}
+
+.notes-empty {
+  text-align: center;
+  font-size: 12px;
+  color: #6b6b7b;
+  padding: 20px 0;
+}
+.notes-empty.hidden {
+  display: none;
+}
+
+.notes-editor {
+  background: rgba(18, 18, 24, 0.72);
+  border: 1px solid #23232d;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+}
+
+.notes-editor-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #6b6b7b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.notes-editor-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 12px;
+}
+.notes-editor-content.hidden {
+  display: none;
+}
+
+.notes-editor-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.note-title-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #23232d;
+  padding: 8px 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #ffffff;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.note-title-input::placeholder {
+  color: #6b6b7b;
+  font-weight: 400;
+}
+.note-title-input:focus {
+  border-color: #8b5cf6;
+}
+
+.note-icon-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #8a8a99;
+  font-size: 16px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.note-icon-btn:hover {
+  color: #c4b5fd;
+  background: rgba(139, 92, 246, 0.12);
+}
+.note-icon-danger:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.note-md-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #23232d;
+  background: #16161d;
+  color: #a2a2b4;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.note-md-btn:hover {
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.notes-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1a1a22;
+}
+
+.note-link-btn {
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid #23232d;
+  background: transparent;
+  color: #8a8a99;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.note-link-btn:hover {
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.5);
+}
+.note-link-btn.linked {
+  color: #c4b5fd;
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.note-tags-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  flex: 1;
+}
+
+.note-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: rgba(139, 92, 246, 0.12);
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.note-tag:hover {
+  background: rgba(139, 92, 246, 0.25);
+}
+
+.note-content-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #d3d3de;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  min-height: 300px;
+}
+.note-content-input::placeholder {
+  color: #6b6b7b;
+}
+.note-content-input.hidden {
+  display: none;
+}
+
+/* Markdown-предпросмотр */
+.note-preview {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #d3d3de;
+  min-height: 300px;
+  overflow-y: auto;
+}
+.note-preview.hidden {
+  display: none;
+}
+.note-preview h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 12px 0 8px;
+  color: #fff;
+}
+.note-preview h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 12px 0 6px;
+  color: #fff;
+}
+.note-preview h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 10px 0 6px;
+  color: #e2e2ea;
+}
+.note-preview p {
+  margin: 4px 0;
+}
+.note-preview strong {
+  color: #fff;
+}
+.note-preview em {
+  color: #c4b5fd;
+}
+.note-preview del {
+  color: #6b6b7b;
+}
+.note-preview code {
+  background: rgba(139, 92, 246, 0.12);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  color: #c4b5fd;
+}
+.note-preview a {
+  color: #a5b4fc;
+  text-decoration: underline;
+}
+.note-preview .md-li {
+  padding-left: 8px;
+}
+.note-preview .md-br {
+  height: 6px;
+}
+
+.note-meta {
+  font-size: 11px;
+  color: #6b6b7b;
+  text-align: right;
+  padding-top: 8px;
+  border-top: 1px solid #1a1a22;
+}
+
+/* =========================================================
+   СВЕТЛАЯ ТЕМА
+========================================================= */
+body.light {
+  --lt-bg: #f5f5f7;
+}
+body.light .gradient-bg,
+body.light.gradient-bg {
+  background:
+    radial-gradient(
+      1200px 600px at 10% -10%,
+      rgba(139, 92, 246, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 110% 10%,
+      rgba(99, 102, 241, 0.06),
+      transparent 60%
+    ),
+    #f5f5f7;
+}
+body.light .card,
+body.light .metric-card,
+body.light .notes-sidebar,
+body.light .notes-editor,
+body.light .modal,
+body.light .pomodoro-box {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: #e2e2ea;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 10px 30px -20px rgba(0, 0, 0, 0.15);
+}
+body.light aside {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: #e2e2ea;
+}
+body.light .nav-item {
+  color: #5a5a70;
+}
+body.light .nav-item:hover {
+  background: #f0f0f5;
+  color: #1a1a2e;
+}
+body.light .nav-item.active {
+  color: #4c1d95;
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.15),
+    rgba(99, 102, 241, 0.08)
+  );
+  border-color: rgba(139, 92, 246, 0.3);
+}
+body.light .task-item,
+body.light .note-item {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #1a1a2e;
+}
+body.light .task-item:hover,
+body.light .note-item:hover {
+  background: #f8f8fc;
+  border-color: #d0d0dc;
+}
+body.light .task-title {
+  color: #1a1a2e;
+}
+body.light .task-item.done .task-title {
+  color: #a0a0b0;
+}
+body.light .task-input,
+body.light .task-option-select,
+body.light .notes-search,
+body.light .note-title-input,
+body.light .note-content-input,
+body.light textarea#dayReport {
+  background: #f8f8fc;
+  border-color: #e2e2ea;
+  color: #1a1a2e;
+}
+body.light .task-input::placeholder,
+body.light textarea::placeholder,
+body.light input::placeholder {
+  color: #a0a0b0;
+}
+body.light .subtasks-list {
+  background: rgba(248, 248, 252, 0.8);
+  border-color: #e2e2ea;
+}
+body.light .subtask-title {
+  color: #1a1a2e;
+}
+body.light .stat-table tbody td {
+  color: #1a1a2e;
+}
+body.light .stat-table thead th {
+  color: #8a8a99;
+}
+body.light .stat-table tbody td {
+  border-color: #f0f0f5;
+}
+body.light .stat-table tbody tr:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+body.light .note-preview {
+  color: #1a1a2e;
+}
+body.light .note-preview h1,
+body.light .note-preview h2,
+body.light .note-preview h3 {
+  color: #1a1a2e;
+}
+body.light .note-preview strong {
+  color: #1a1a2e;
+}
+body.light .timeline-hour {
+  border-color: #e2e2ea;
+}
+body.light .timeline-hour-label {
+  color: #8a8a99;
+}
+body.light .date-nav-btn,
+body.light .date-nav-today,
+body.light .role-select,
+body.light .settings-select {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light .date-nav-btn:hover,
+body.light .date-nav-today:hover {
+  color: #4c1d95;
+  border-color: rgba(139, 92, 246, 0.5);
+}
+body.light .timeline-unscheduled-item {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #1a1a2e;
+}
+body.light .modal-backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}
+body.light .pomodoro-overlay {
+  background: rgba(0, 0, 0, 0.35);
+}
+body.light #profileAvatar {
+  color: #fff;
+}
+/* =========================================================
+   СВЕТЛАЯ ТЕМА — КНОПКИ И ЭЛЕМЕНТЫ УПРАВЛЕНИЯ
+========================================================= */
+
+/* Кнопки в сайдбаре (Export, Import, Reset, Theme, Login, Logout) */
+body.light #loginBtn,
+body.light #logoutBtn,
+body.light #exportBtn,
+body.light #importBtn,
+body.light #resetDataBtn,
+body.light #themeToggleBtn {
+  background: #ffffff !important;
+  border-color: #e2e2ea !important;
+  color: #5a5a70 !important;
+}
+body.light #loginBtn:hover,
+body.light #logoutBtn:hover,
+body.light #exportBtn:hover,
+body.light #importBtn:hover,
+body.light #themeToggleBtn:hover {
+  background: #f0f0f5 !important;
+  border-color: #d0d0dc !important;
+  color: #4c1d95 !important;
+}
+body.light #resetDataBtn:hover {
+  color: #ef4444 !important;
+}
+
+/* Кнопки «Отмена» в модалках */
+body.light #cancelModalBtn,
+body.light #cancelTaskModalBtn,
+body.light #cancelLoginBtn {
+  background: #ffffff !important;
+  border-color: #e2e2ea !important;
+  color: #5a5a70 !important;
+}
+body.light #cancelModalBtn:hover,
+body.light #cancelTaskModalBtn:hover,
+body.light #cancelLoginBtn:hover {
+  background: #f0f0f5 !important;
+  color: #1a1a2e !important;
+}
+
+/* Кнопка «Новая задача» */
+body.light .new-task-btn {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.08),
+    rgba(99, 102, 241, 0.04)
+  );
+  border-color: rgba(139, 92, 246, 0.35);
+  color: #7c3aed;
+}
+body.light .new-task-btn:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.16),
+    rgba(99, 102, 241, 0.08)
+  );
+  border-color: rgba(139, 92, 246, 0.65);
+  color: #5b21b6;
+}
+
+/* Навигация по дням */
+body.light .date-nav-btn,
+body.light .date-nav-today {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light .date-nav-btn:hover,
+body.light .date-nav-today:hover {
+  background: #f8f8fc;
+  border-color: rgba(139, 92, 246, 0.5);
+  color: #4c1d95;
+}
+
+/* Кнопки у задачи (▶ таймер, 🍅 помодоро, 🗑) */
+body.light .timer-btn,
+body.light .pomodoro-btn {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light .timer-btn:hover,
+body.light .pomodoro-btn:hover {
+  background: #f8f8fc;
+}
+body.light .timer-btn.running {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Кнопка сброса опций формы */
+body.light .task-option-clear {
+  color: #5a5a70;
+  border-color: #e2e2ea;
+  background: transparent;
+}
+body.light .task-option-clear:hover {
+  color: #1a1a2e;
+  border-color: #d0d0dc;
+  background: #f8f8fc;
+}
+
+/* Модалки */
+body.light .modal-close {
+  color: #5a5a70;
+}
+body.light .modal-close:hover {
+  background: #f0f0f5;
+  color: #1a1a2e;
+}
+
+/* Подзадачи */
+body.light .subtasks-toggle-btn {
+  color: #5a5a70;
+  border-color: #e2e2ea;
+}
+body.light .subtasks-toggle-btn:hover {
+  color: #4c1d95;
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.06);
+}
+body.light .subtask-add-input {
+  background: #f8f8fc;
+  border-color: #e2e2ea;
+  color: #1a1a2e;
+}
+
+/* Помодоро — вторичные кнопки */
+body.light .pomodoro-btn-secondary {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light .pomodoro-btn-secondary:hover {
+  background: #f0f0f5;
+  color: #1a1a2e;
+  border-color: #d0d0dc;
+}
+body.light .pomodoro-close {
+  color: #5a5a70;
+}
+body.light .pomodoro-close:hover {
+  background: #f0f0f5;
+  color: #1a1a2e;
+}
+body.light .preset-btn {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light .preset-btn:hover {
+  color: #4c1d95;
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* Блокнот */
+body.light .note-icon-btn {
+  color: #5a5a70;
+}
+body.light .note-icon-btn:hover {
+  color: #4c1d95;
+  background: rgba(139, 92, 246, 0.1);
+}
+body.light .note-md-btn {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light .note-md-btn:hover {
+  color: #4c1d95;
+  border-color: rgba(139, 92, 246, 0.5);
+}
+body.light .note-link-btn {
+  color: #5a5a70;
+  border-color: #e2e2ea;
+}
+body.light .note-link-btn:hover {
+  color: #4c1d95;
+  border-color: rgba(139, 92, 246, 0.5);
+}
+body.light .note-link-btn.linked {
+  color: #7c3aed;
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+/* Иконка-кнопка удаления пользователя */
+body.light .icon-btn {
+  color: #5a5a70;
+}
+body.light .icon-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Бейджи */
+body.light .badge-active {
+  background: rgba(34, 197, 94, 0.14);
+  color: #16a34a;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+body.light .badge-inactive {
+  background: rgba(107, 107, 123, 0.12);
+  color: #6b6b7b;
+  border-color: rgba(107, 107, 123, 0.2);
+}
+
+/* Верхняя панель прогресса аналитики */
+body.light .progress-mini {
+  background: #e8e8f0;
+}
+/* =========================================================
+   НАТИВНЫЕ КОНТРОЛЫ — тёмная схема
+========================================================= */
+input[type="date"],
+input[type="time"],
+input[type="number"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+select {
+  color-scheme: dark;
+}
+
+/* Светлая тема */
+body.light input[type="date"],
+body.light input[type="time"],
+body.light input[type="number"],
+body.light input[type="datetime-local"],
+body.light input[type="month"],
+body.light input[type="week"],
+body.light select {
+  color-scheme: light;
+}
+/* =========================================================
+   ЗДОРОВЬЕ — красивый ввод
+========================================================= */
+
+/* Карточка */
+#view-today .card:has(#wakeTime) {
+  padding: 20px;
+}
+
+/* Строка «Подъём» */
+.health-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.health-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #b0b0c0;
+  letter-spacing: 0.02em;
+}
+
+/* Поле времени */
+.health-input {
+  background: #16161d;
+  border: 1px solid #2e2e3d;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #e2e2ea;
+  outline: none;
+  font-variant-numeric: tabular-nums;
+  color-scheme: dark;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  cursor: pointer;
+}
+.health-input:hover {
+  border-color: #34344a;
+}
+.health-input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+}
+
+/* Скрыть уродливую нативную иконку часов */
+.health-input::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
+/* Блок упражнений */
+.health-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Заголовок «Упражнения» + итог */
+.health-block > .health-label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Список упражнений */
+.exercises-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.exercise-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid #23232d;
+  font-size: 13px;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.exercise-item:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.exercise-name {
+  flex: 1;
+  color: #e2e2ea;
+  font-weight: 500;
+}
+
+.exercise-min {
+  font-size: 12px;
+  font-weight: 500;
+  color: #c4b5fd;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Крестик удаления — деликатный */
+.exercise-delete {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+  color: #8a8a99;
+  cursor: pointer;
+  border-radius: 5px;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.exercise-item:hover .exercise-delete {
+  opacity: 1;
+}
+.exercise-delete:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* Строка добавления */
+.exercise-add-row {
+  display: grid;
+  grid-template-columns: 1fr 72px 36px;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* Селект упражнений */
+.exercise-select,
+.exercise-duration {
+  background: #16161d;
+  border: 1px solid #2e2e3d;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #e2e2ea;
+  outline: none;
+  color-scheme: dark;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238a8a99' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+  cursor: pointer;
+}
+.exercise-select:hover,
+.exercise-duration:hover {
+  border-color: #34344a;
+}
+.exercise-select:focus,
+.exercise-duration:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+}
+
+.exercise-duration {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  padding-right: 12px;
+  background-image: none;
+}
+.exercise-duration::placeholder {
+  color: #6b6b7b;
+}
+
+/* Скрыть стрелочки у number-поля */
+.exercise-duration::-webkit-inner-spin-button,
+.exercise-duration::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.exercise-duration {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Кнопка «+» — круглая, фиолетовая */
+.exercise-add-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.2s ease;
+}
+.exercise-add-btn:hover {
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.55);
+  transform: translateY(-1px);
+}
+.exercise-add-btn:active {
+  transform: scale(0.94);
+}
+
+/* Светлая тема */
+body.light .health-label {
+  color: #5a5a70;
+}
+body.light .health-input,
+body.light .exercise-select,
+body.light .exercise-duration {
+  background-color: #f8f8fc;
+  border-color: #e2e2ea;
+  color: #1a1a2e;
+  color-scheme: light;
+}
+body.light .exercise-item {
+  background: rgba(139, 92, 246, 0.04);
+  border-color: #e2e2ea;
+}
+body.light .exercise-name {
+  color: #1a1a2e;
+}
+body.light .exercise-min {
+  color: #7c3aed;
+}
+body.light .exercise-delete {
+  color: #8a8a99;
+}
+body.light .exercise-select {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%235a5a70' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+/* =========================================================
+   ИНДИКАТОР АКТИВНОГО ФИЛЬТРА ЗАМЕТОК
+========================================================= */
+.note-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(139, 92, 246, 0.15);
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  margin-top: 4px;
+  width: fit-content;
+}
+.note-filter-badge.hidden {
+  display: none;
+}
+.note-filter-badge strong {
+  font-weight: 600;
+}
+.note-filter-badge button {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+.note-filter-badge button:hover {
+  opacity: 1;
+}
+
+body.light .note-filter-badge {
+  background: rgba(139, 92, 246, 0.1);
+  color: #7c3aed;
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+/* =========================================================
+   ФИКС: плавное обновление Chart.js при смене темы
+========================================================= */
+body.light canvas {
+  filter: none;
+}
+/* =========================================================
+   ПЛАВНЫЙ ПЕРЕХОД ТЕМЫ
+========================================================= */
+
+/* Плавный переход для базовых элементов */
+body,
+body * {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+/* Исключения — чтобы не тормозить анимации */
+.task-item,
+.note-item,
+.timeline-task,
+.subtask-item,
+.exercise-item,
+.timer-btn,
+.pomodoro-btn,
+.priority-flag,
+.checkbox,
+.new-task-btn,
+.nav-item,
+.date-nav-btn,
+.date-nav-today,
+.modal,
+.pomodoro-box,
+.metric-card,
+button,
+input,
+select,
+textarea {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.15s ease;
+}
+
+/* Графики Chart.js тоже плавно */
+canvas {
+  transition: opacity 0.35s ease;
+}
+/* =========================================================
+   AI-ПОМОЩНИК
+========================================================= */
+.ai-split-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid #23232d;
+  background: #16161d;
+  color: #8a8a99;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 14px;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+.ai-split-btn:hover {
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(139, 92, 246, 0.08);
+  transform: scale(1.1);
+}
+
+.ai-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #8a8a99;
+  margin-top: 6px;
+}
+
+.ai-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(139, 92, 246, 0.25);
+  border-top-color: #8b5cf6;
+  border-radius: 50%;
+  animation: ai-spin 0.7s linear infinite;
+}
+@keyframes ai-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body.light .ai-split-btn {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light .ai-split-btn:hover {
+  color: #7c3aed;
+  border-color: rgba(139, 92, 246, 0.5);
+}
+/* Кнопка возврата в лаунчер */
+.back-to-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #23232d;
+  color: #8a8a99;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.back-to-menu-btn:hover {
+  color: #c4b5fd;
+  background: rgba(139, 92, 246, 0.08);
+}
+.back-to-menu-btn svg {
+  flex-shrink: 0;
+}
+
+body.light .back-to-menu-btn {
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light .back-to-menu-btn:hover {
+  color: #4c1d95;
+  background: rgba(139, 92, 246, 0.06);
+}
+/* =========================================================
+   СВЕТЛАЯ ТЕМА — тексты и элементы
+========================================================= */
+body.light {
+  background: #f5f5f7;
+  color: #1a1a2e;
+}
+
+/* Заголовки и текст */
+body.light h1,
+body.light h2,
+body.light h3,
+body.light .text-slate-200,
+body.light .text-slate-300,
+body.light .text-slate-400 {
+  color: #1a1a2e !important;
+}
+
+body.light .text-muted {
+  color: #5a5a70 !important;
+}
+
+/* Сайдбар */
+body.light aside {
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-color: #e2e2ea !important;
+}
+body.light .nav-item {
+  color: #5a5a70;
+}
+body.light .nav-item:hover {
+  background: #f0f0f5;
+  color: #1a1a2e;
+}
+body.light .nav-item.active {
+  color: #7c3aed;
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.15),
+    rgba(99, 102, 241, 0.06)
+  );
+  border-color: rgba(139, 92, 246, 0.35);
+}
+
+/* Кнопки */
+body.light .new-task-btn {
+  background: rgba(139, 92, 246, 0.06);
+  border-color: rgba(139, 92, 246, 0.35);
+  color: #7c3aed;
+}
+body.light .new-task-btn:hover {
+  background: rgba(139, 92, 246, 0.14);
+  border-color: rgba(139, 92, 246, 0.7);
+  color: #5b21b6;
+}
+body.light .back-to-menu-btn {
+  color: #5a5a70;
+  border-color: #e2e2ea;
+}
+body.light .back-to-menu-btn:hover {
+  color: #7c3aed;
+  background: rgba(139, 92, 246, 0.06);
+}
+
+/* Иконки-кнопки (экспорт, импорт, сброс) */
+body.light #exportBtn,
+body.light #importBtn,
+body.light #resetDataBtn,
+body.light #loginBtn,
+body.light #logoutBtn {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light #exportBtn:hover,
+body.light #importBtn:hover {
+  color: #7c3aed;
+}
+body.light #resetDataBtn:hover {
+  color: #ef4444;
+}
+
+/* Задачи */
+body.light .task-item {
+  background: #ffffff;
+  border-color: #e2e2ea;
+}
+body.light .task-item:hover {
+  background: #fafafe;
+  border-color: #d0d0dc;
+}
+body.light .task-title {
+  color: #1a1a2e;
+}
+body.light .task-item.done .task-title {
+  color: #a0a0b0;
+}
+
+/* Поля ввода */
+body.light .task-input,
+body.light .task-option-select,
+body.light input,
+body.light textarea,
+body.light select {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #1a1a2e;
+}
+body.light input::placeholder,
+body.light textarea::placeholder {
+  color: #a0a0b0;
+}
+
+/* Модалки */
+body.light .modal {
+  background: #ffffff;
+  border-color: #e2e2ea;
+}
+
+/* Кнопка задачи (таймер, помодоро, ✨) */
+body.light .timer-btn,
+body.light .pomodoro-btn,
+body.light .ai-split-btn {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light .timer-btn:hover,
+body.light .pomodoro-btn:hover,
+body.light .ai-split-btn:hover {
+  color: #7c3aed;
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* Навигация по датам */
+body.light .date-nav-btn,
+body.light .date-nav-today {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light .date-nav-btn:hover,
+body.light .date-nav-today:hover {
+  background: #f8f8fc;
+  border-color: rgba(139, 92, 246, 0.5);
+  color: #4c1d95;
+}
+/* =========================================================
+   АНИМАЦИИ — Этап 1 (безопасная версия)
+========================================================= */
+
+/* ---------- 1. Hover-подъём карточек задач ---------- */
+.task-item {
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    opacity 0.3s ease,
+    transform 0.18s ease,
+    box-shadow 0.22s ease;
+}
+.task-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -8px rgba(139, 92, 246, 0.35);
+}
+.task-item:active {
+  transform: translateY(0);
+}
+
+/* ---------- 2. Зачёркивание задачи при выполнении ---------- */
+.task-item .task-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1.5px;
+  width: 0%;
+  background: currentColor;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.task-item.done .task-title::after {
+  width: 100%;
+}
+
+/* ---------- 3. Hover на nav-item (сдвиг вправо) ---------- */
+.nav-item {
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.15s ease;
+}
+.nav-item:hover:not(.active) {
+  transform: translateX(3px);
+}
+
+/* ---------- 4. Плавное появление метрик ---------- */
+.metric-card {
+  transition:
+    border-color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.metric-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px -12px rgba(139, 92, 246, 0.35);
+}
+
+/* ---------- 5. Hover на карточках заметок ---------- */
+.note-item {
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+.note-item:hover:not(.active) {
+  transform: translateX(3px);
+}
+
+/* ---------- 6. Hover на упражнениях ---------- */
+.exercise-item {
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.15s ease;
+}
+.exercise-item:hover {
+  transform: translateX(3px);
+}
+
+/* ---------- 7. Hover на карточке "Здоровье" ---------- */
+.card:has(#wakeTime) {
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.card:has(#wakeTime):hover {
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 8px 24px -12px rgba(139, 92, 246, 0.3);
+}
+
+/* ---------- 8. Hover на кнопках навигации по дням ---------- */
+.date-nav-btn,
+.date-nav-today {
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.12s ease;
+}
+.date-nav-btn:hover,
+.date-nav-today:hover {
+  transform: translateY(-1px);
+}
+.date-nav-btn:active,
+.date-nav-today:active {
+  transform: translateY(0) scale(0.96);
+}
+/* =========================================================
+   ТАЙМЛАЙН — прокрутка карточки
+========================================================= */
+
+#view-timeline .card {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Красивый скроллбар */
+#view-timeline .card::-webkit-scrollbar {
+  width: 8px;
+}
+#view-timeline .card::-webkit-scrollbar-track {
+  background: transparent;
+}
+#view-timeline .card::-webkit-scrollbar-thumb {
+  background: #23232d;
+  border-radius: 999px;
+}
+#view-timeline .card::-webkit-scrollbar-thumb:hover {
+  background: #34344a;
+}
+
+body.light #view-timeline .card::-webkit-scrollbar-thumb {
+  background: #d0d0dc;
+}
+/* =========================================================
+   СВЕТЛАЯ ТЕМА — ФИКСЫ КНОПОК (дополнение)
+========================================================= */
+
+/* Кнопки в карточке «Отчёт дня» */
+body.light #saveReportBtn,
+body.light #aiAnalyzeBtn {
+  background: #ffffff;
+  border-color: #e2e2ea;
+  color: #5a5a70;
+}
+body.light #saveReportBtn:hover,
+body.light #aiAnalyzeBtn:hover {
+  background: #f0f0f5;
+  border-color: #d0d0dc;
+  color: #7c3aed;
+}
+
+/* Чекбоксы задач / подзадач */
+body.light .checkbox,
+body.light .subtask-checkbox {
+  border-color: #b8b8c8;
+}
+body.light .checkbox:hover,
+body.light .subtask-checkbox:hover {
+  border-color: #8b5cf6;
+}
+
+/* Флаг приоритета */
+body.light .priority-flag {
+  border-color: #b8b8c8;
+}
+
+/* Иконки удаления задач / подзадач */
+body.light .task-delete,
+body.light .subtask-delete {
+  color: #8a8a99;
+}
+body.light .task-delete:hover,
+body.light .subtask-delete:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+/* =========================================================
+   ИНДИКАТОР СИНХРОНИЗАЦИИ
+========================================================= */
+.sync-dot {
+  font-size: 10px;
+  line-height: 1;
+  cursor: help;
+  transition: color 0.2s ease;
+  color: #6b6b7b;
+}
+.sync-dot[data-status="ok"] {
+  color: #10b981;
+  text-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+.sync-dot[data-status="error"] {
+  color: #ef4444;
+  text-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+}
