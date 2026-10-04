@@ -1,12 +1,29 @@
 /* Deno Deploy: сервер ежедневника.
-   Статика — открыта (для PWA).
-   API — только с логином/паролем. */
+   Статика — открыта.
+   API — Basic Auth + CORS (для локальной разработки). */
 
 const AUTH_USER = Deno.env.get("AUTH_USER") || "";
 const AUTH_PASS = Deno.env.get("AUTH_PASS") || "";
 const SYNC_URL =
   Deno.env.get("SYNC_URL") || "https://diary-sync.iehsbsbjisjshbb.workers.dev";
 const SYNC_SECRET = Deno.env.get("SYNC_SECRET") || "";
+
+/* ---------- CORS ----------
+   Разрешаем запросы с любого origin + credentials (Basic Auth).
+   Это безопасно, потому что:
+   - секрет Cloudflare остаётся на стороне Deno
+   - API всё равно защищён Basic Auth
+*/
+function corsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") || "*";
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS, DELETE",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Credentials": "true",
+    "Vary": "Origin",
+  };
+}
 
 const MIME: Record<string, string> = {
   html: "text/html; charset=utf-8",
@@ -41,17 +58,18 @@ function checkAuth(req: Request): boolean {
   }
 }
 
-function unauthorized(): Response {
+function unauthorized(req: Request): Response {
   return new Response("Требуется авторизация", {
     status: 401,
     headers: {
       "WWW-Authenticate": 'Basic realm="Diary", charset="UTF-8"',
       "Content-Type": "text/plain; charset=utf-8",
+      ...corsHeaders(req),
     },
   });
 }
 
-/* ---------- Прокси к Cloudflare Worker (добавляет секрет) ---------- */
+/* ---------- Прокси к Cloudflare Worker ---------- */
 async function proxyApi(req: Request, url: URL): Promise<Response> {
   const target = SYNC_URL + url.pathname + url.search;
 
@@ -76,6 +94,7 @@ async function proxyApi(req: Request, url: URL): Promise<Response> {
     status: res.status,
     headers: {
       "Content-Type": res.headers.get("Content-Type") || "application/json",
+      ...corsHeaders(req),
     },
   });
 }
@@ -85,21 +104,32 @@ Deno.serve(async (req) => {
   const url = new URL(req.url);
   let path = url.pathname;
 
-  /* ============ API — ЗАЩИЩЕНО ============ */
+  /* ============ CORS preflight ============ */
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders(req),
+    });
+  }
+
+  /* ============ API — защищено ============ */
   if (path.startsWith("/api/")) {
-    if (!checkAuth(req)) return unauthorized();
+    if (!checkAuth(req)) return unauthorized(req);
 
     try {
       return await proxyApi(req, url);
     } catch (e) {
       return new Response(JSON.stringify({ error: String(e) }), {
         status: 502,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders(req),
+        },
       });
     }
   }
 
-  /* ============ СТАТИКА — ОТКРЫТА ============ */
+  /* ============ СТАТИКА — открыта ============ */
   if (path === "/" || path === "") path = "/index.html";
 
   try {
