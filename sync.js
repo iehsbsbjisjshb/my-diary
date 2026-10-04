@@ -1,9 +1,9 @@
 /* =========================================================
    sync.js — двусторонняя синхронизация + бэкапы.
+   Все запросы идут через Deno (он добавляет секрет).
 ========================================================= */
 
-const SYNC_URL = "https://diary-sync.iehsbsbjisjshbb.workers.dev";
-const SYNC_SECRET = "superlongsecret123xyz_ChangeMe";
+const SYNC_URL = "https://my-diary.iehsbsbjisjshb.deno.net";
 const SYNC_INTERVAL_MS = 15000;
 const SYNC_LAST_KEY = "diary:sync:lastTs";
 const SYNC_NOTIFY_KEY = "diary:sync:notify";
@@ -55,7 +55,6 @@ async function pushItem(item) {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
-        "X-Secret": SYNC_SECRET,
       },
       body: JSON.stringify(payload),
     });
@@ -283,9 +282,8 @@ async function syncPull({ silent = false } = {}) {
   const since = getLastSyncTs();
 
   try {
-    const res = await fetch(`${SYNC_URL}/api/pull?since=${since}`, {
-      headers: { "X-Secret": SYNC_SECRET },
-    });
+    const res = await fetch(`${SYNC_URL}/api/pull?since=${since}`);
+
     if (!res.ok) throw new Error("HTTP " + res.status);
 
     const { items, serverTime } = await res.json();
@@ -341,7 +339,6 @@ async function sendBackup({ force = false } = {}) {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
-        "X-Secret": SYNC_SECRET,
       },
       body: JSON.stringify(payload),
     });
@@ -400,7 +397,6 @@ function startSync() {
   /* --- Бэкапы --- */
   sendBackup();
   if (__backupTimer) clearInterval(__backupTimer);
-  /* Проверяем раз в час — если прошло > 24 часов, отправим */
   __backupTimer = setInterval(() => sendBackup(), 60 * 60 * 1000);
 
   console.log("[sync] запущен");
