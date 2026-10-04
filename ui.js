@@ -404,6 +404,39 @@ function bindEvents() {
     if (e.key === "ArrowRight") switchDate(1);
     if (e.key.toLowerCase() === "t") goToToday();
   });
+    /* =========================================================
+     Мобильная навигация (нижняя панель)
+  ========================================================= */
+  document.querySelectorAll("[data-mobile-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const view = btn.dataset.mobileView;
+      switchView(view);
+
+      document
+        .querySelectorAll(".mobile-nav-btn")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
+
+  /* Кнопка "Ещё" — открывает простое меню */
+  document.getElementById("mobileSettingsBtn")?.addEventListener("click", () => {
+    const choice = prompt(
+      "Настройки:\n\n" +
+        "1 — Переключить тему\n" +
+        "2 — Экспорт данных\n" +
+        "3 — Импорт данных\n\n" +
+        "Введи номер:",
+    );
+
+    if (choice === "1") {
+      document.getElementById("themeToggleBtn")?.click();
+    } else if (choice === "2") {
+      document.getElementById("exportBtn")?.click();
+    } else if (choice === "3") {
+      document.getElementById("importBtn")?.click();
+    }
+  });
 }
 
 /* ---------- ИНИЦИАЛИЗАЦИЯ ---------- */
