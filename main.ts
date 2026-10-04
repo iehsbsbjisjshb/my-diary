@@ -1,4 +1,6 @@
-/* Deno Deploy: сервер ежедневника с авторизацией и прокси */
+/* Deno Deploy: сервер ежедневника.
+   Статика — открыта (для PWA).
+   API — только с логином/паролем. */
 
 const AUTH_USER = Deno.env.get("AUTH_USER") || "";
 const AUTH_PASS = Deno.env.get("AUTH_PASS") || "";
@@ -11,18 +13,17 @@ const MIME: Record<string, string> = {
   css: "text/css; charset=utf-8",
   js: "application/javascript; charset=utf-8",
   json: "application/json; charset=utf-8",
+  webmanifest: "application/manifest+json",
   svg: "image/svg+xml",
   png: "image/png",
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
   ico: "image/x-icon",
-  webmanifest: "application/manifest+json",
   txt: "text/plain; charset=utf-8",
 };
 
 /* ---------- Проверка авторизации ---------- */
 function checkAuth(req: Request): boolean {
-  /* Если логин/пароль не заданы — доступ открыт (для локальной отладки) */
   if (!AUTH_USER || !AUTH_PASS) return true;
 
   const header = req.headers.get("authorization") || "";
@@ -50,12 +51,15 @@ function unauthorized(): Response {
   });
 }
 
-/* ---------- Прокси к Cloudflare Worker ---------- */
+/* ---------- Прокси к Cloudflare Worker (добавляет секрет) ---------- */
 async function proxyApi(req: Request, url: URL): Promise<Response> {
   const target = SYNC_URL + url.pathname + url.search;
 
   const headers = new Headers();
-  headers.set("Content-Type", req.headers.get("Content-Type") || "application/json");
+  headers.set(
+    "Content-Type",
+    req.headers.get("Content-Type") || "application/json",
+  );
   headers.set("X-Secret", SYNC_SECRET);
 
   const init: RequestInit = {
@@ -78,14 +82,13 @@ async function proxyApi(req: Request, url: URL): Promise<Response> {
 
 /* ---------- Сервер ---------- */
 Deno.serve(async (req) => {
-  /* 1. Авторизация */
-  if (!checkAuth(req)) return unauthorized();
-
   const url = new URL(req.url);
   let path = url.pathname;
 
-  /* 2. API → проксируем к Cloudflare */
+  /* ============ API — ЗАЩИЩЕНО ============ */
   if (path.startsWith("/api/")) {
+    if (!checkAuth(req)) return unauthorized();
+
     try {
       return await proxyApi(req, url);
     } catch (e) {
@@ -96,7 +99,7 @@ Deno.serve(async (req) => {
     }
   }
 
-  /* 3. Статика */
+  /* ============ СТАТИКА — ОТКРЫТА ============ */
   if (path === "/" || path === "") path = "/index.html";
 
   try {
