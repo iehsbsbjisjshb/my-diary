@@ -883,6 +883,29 @@
       accept="application/json,.json"
       hidden
     />
+        <!-- Мобильная нижняя навигация (только на телефоне) -->
+    <nav class="mobile-nav" id="mobileNav">
+      <button class="mobile-nav-btn active" data-mobile-view="today">
+        <span class="icon">📅</span>
+        <span>День</span>
+      </button>
+      <button class="mobile-nav-btn" data-mobile-view="timeline">
+        <span class="icon">🕐</span>
+        <span>Мой день</span>
+      </button>
+      <button class="mobile-nav-btn" data-mobile-view="week">
+        <span class="icon">📊</span>
+        <span>Аналитика</span>
+      </button>
+      <button class="mobile-nav-btn" data-mobile-view="notes">
+        <span class="icon">📝</span>
+        <span>Блокнот</span>
+      </button>
+      <button class="mobile-settings-btn" id="mobileSettingsBtn">
+        <span class="icon">⚙️</span>
+        <span>Ещё</span>
+      </button>
+    </nav>
 
     <script src="storage.js"></script>
     <script src="i18n.js"></script>
