@@ -1,8 +1,23 @@
 /* =========================================================
    sync.js — двусторонняя синхронизация + очередь офлайн.
+   Локально → напрямую Cloudflare Worker.
+   Продакшн → через Cloudflare Pages (Basic Auth + прокси).
 ========================================================= */
 
-const SYNC_URL = "https://my-diary.iehsbsbjisjshb.deno.net";
+const IS_LOCAL =
+  location.hostname === "127.0.0.1" ||
+  location.hostname === "localhost" ||
+  location.protocol === "file:";
+
+/* --- URL и секрет --- */
+const SYNC_URL = IS_LOCAL
+  ? "https://diary-sync.iehsbsbjisjshbb.workers.dev"
+  : "https://my-diary-eib.pages.dev";
+
+/* Секрет используется ТОЛЬКО локально.
+   В продакшене Pages добавляет его на сервере. */
+const SYNC_SECRET = IS_LOCAL ? "superlongsecret123xyz_ChangeMe" : null;
+
 const SYNC_INTERVAL_MS = 15000;
 const SYNC_LAST_KEY = "diary:sync:lastTs";
 const SYNC_NOTIFY_KEY = "diary:sync:notify";
@@ -26,8 +41,18 @@ function setLastSyncTs(ts) {
   localStorage.setItem(SYNC_LAST_KEY, String(ts));
 }
 
+/* Универсальный fetch.
+   Если секрет есть (локально) — добавляем X-Secret.
+   Если нет (продакшн) — Basic Auth уходит автоматически, Pages добавит X-Secret. */
+async function apiFetch(path, options = {}) {
+  const url = SYNC_URL + path;
+  const headers = new Headers(options.headers || {});
+  if (SYNC_SECRET) headers.set("X-Secret", SYNC_SECRET);
+  return fetch(url, { ...options, headers });
+}
+
 /* =========================================================
-   ОЧЕРЕДЬ ИСХОДЯЩИХ (офлайн-буфер)
+   ОЧЕРЕДЬ ИСХОДЯЩИХ
 ========================================================= */
 function getOutbox() {
   try {
@@ -46,16 +71,10 @@ function setOutbox(arr) {
   }
 }
 
-/* Кладём в очередь. Дедуплицируем по id — оставляем последнюю версию */
 function enqueueOutbox(payload) {
   const outbox = getOutbox();
   const filtered = outbox.filter((x) => x.id !== payload.id);
-  filtered.push({
-    id: payload.id,
-    payload,
-    ts: Date.now(),
-  });
-  /* Ограничиваем 500 записей */
+  filtered.push({ id: payload.id, payload, ts: Date.now() });
   if (filtered.length > 500) filtered.splice(0, filtered.length - 500);
   setOutbox(filtered);
 }
@@ -66,14 +85,11 @@ function dequeueOutbox(id) {
   setOutbox(filtered);
 }
 
-/* Отправляем одну запись. true = успех */
 async function sendOne(payload) {
   try {
-    const res = await fetch(`${SYNC_URL}/api/push`, {
+    const res = await apiFetch("/api/push", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
+      headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify(payload),
     });
     if (!res.ok) return false;
@@ -83,7 +99,6 @@ async function sendOne(payload) {
   }
 }
 
-/* Проходимся по очереди и пытаемся всё отправить */
 async function flushOutbox() {
   if (__flushInProgress) return;
   __flushInProgress = true;
@@ -94,7 +109,7 @@ async function flushOutbox() {
     return;
   }
 
-  console.log(`[sync] отправка из очереди: ${outbox.length} записей`);
+  console.log(`[sync] отправка из очереди: ${outbox.length}`);
   let sent = 0;
 
   for (const entry of outbox) {
@@ -103,7 +118,6 @@ async function flushOutbox() {
       dequeueOutbox(entry.id);
       sent++;
     } else {
-      /* если сеть упала на середине — прекращаем, попробуем позже */
       break;
     }
   }
@@ -123,7 +137,6 @@ async function pushItem(item) {
     item.kind === "task" ? item.dueDate || state.currentDate : null;
   const payload = { ...item, dateKey };
 
-  /* 1. Broadcast другим вкладкам */
   if (__syncChannel) {
     try {
       __syncChannel.postMessage({ type: "item", item: payload });
@@ -132,36 +145,27 @@ async function pushItem(item) {
     }
   }
 
-  /* 2. localStorage notify */
   try {
     localStorage.setItem(SYNC_NOTIFY_KEY, String(Date.now()));
   } catch (e) {
     /* ignore */
   }
 
-  /* 3. Сразу в очередь — на случай если интернет пропадёт */
   enqueueOutbox(payload);
 
-  /* 4. Пробуем отправить немедленно */
   const ok = await sendOne(payload);
   if (ok) {
     dequeueOutbox(payload.id);
     return true;
   }
 
-  /* Осталось в очереди — отправим когда появится интернет */
   console.log("[sync] нет сети, задача в очереди:", payload.id);
   return false;
 }
 
 async function pushDelete(id, kind) {
   if (!id) return false;
-  return pushItem({
-    id,
-    kind,
-    deleted: true,
-    updatedAt: Date.now(),
-  });
+  return pushItem({ id, kind, deleted: true, updatedAt: Date.now() });
 }
 
 /* =========================================================
@@ -170,7 +174,6 @@ async function pushDelete(id, kind) {
 function mergeSyncedItem(item) {
   if (!item || !item.kind) return false;
 
-  /* ---------- УДАЛЕНИЕ ---------- */
   if (item.deleted) {
     if (item.kind === "task") {
       let removed = false;
@@ -209,7 +212,6 @@ function mergeSyncedItem(item) {
     return false;
   }
 
-  /* ---------- TASK ---------- */
   if (item.kind === "task") {
     const dateKey = item.dateKey || item.dueDate || todayKey();
     const tasks = Storage.loadTasks(dateKey);
@@ -244,7 +246,6 @@ function mergeSyncedItem(item) {
     return true;
   }
 
-  /* ---------- NOTE ---------- */
   if (item.kind === "note") {
     const notes = Storage.loadNotes();
     const idx = notes.findIndex((n) => n.id === item.id);
@@ -270,7 +271,6 @@ function mergeSyncedItem(item) {
     return true;
   }
 
-  /* ---------- REPORT ---------- */
   if (item.kind === "report") {
     const dateKey = item.date || todayKey();
     const current = Storage.loadReport(dateKey);
@@ -280,17 +280,11 @@ function mergeSyncedItem(item) {
     return true;
   }
 
-  /* ---------- EXERCISE ---------- */
   if (item.kind === "exercise") {
     const dateKey = item.date || todayKey();
     const exercises = Storage.loadExercises(dateKey);
     const idx = exercises.findIndex((e) => e.id === item.id);
-
-    const entry = {
-      id: item.id,
-      type: item.type,
-      duration: item.duration,
-    };
+    const entry = { id: item.id, type: item.type, duration: item.duration };
 
     if (idx >= 0) {
       const old = exercises[idx];
@@ -305,7 +299,6 @@ function mergeSyncedItem(item) {
     return true;
   }
 
-  /* ---------- WAKE ---------- */
   if (item.kind === "wake") {
     const dateKey = item.date || todayKey();
     const current = Storage.loadWake(dateKey);
@@ -315,7 +308,6 @@ function mergeSyncedItem(item) {
     return true;
   }
 
-  /* ---------- POMODORO ---------- */
   if (item.kind === "pomodoro") {
     const dateKey = item.date || todayKey();
     const current = Storage.loadPomodoro(dateKey);
@@ -370,7 +362,7 @@ async function syncPull({ silent = false } = {}) {
   const since = getLastSyncTs();
 
   try {
-    const res = await fetch(`${SYNC_URL}/api/pull?since=${since}`);
+    const res = await apiFetch(`/api/pull?since=${since}`);
 
     if (!res.ok) throw new Error("HTTP " + res.status);
 
@@ -419,11 +411,9 @@ async function sendBackup({ force = false } = {}) {
     const data = Storage.exportAll();
     const payload = { createdAt: now, data };
 
-    const res = await fetch(`${SYNC_URL}/api/backup`, {
+    const res = await apiFetch("/api/backup", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
+      headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify(payload),
     });
 
@@ -445,7 +435,10 @@ async function sendBackup({ force = false } = {}) {
    ЗАПУСК
 ========================================================= */
 function startSync() {
-  console.log("[sync] старт");
+  console.log(
+    "[sync] старт",
+    IS_LOCAL ? "(локально → Cloudflare)" : "(продакшн → Cloudflare Pages)",
+  );
 
   if (__syncChannel) {
     __syncChannel.onmessage = (event) => {
@@ -467,20 +460,16 @@ function startSync() {
     }
   });
 
-  /* Появление интернета — сразу отправляем очередь */
   window.addEventListener("online", () => {
     console.log("[sync] сеть появилась — отправляю очередь");
     flushOutbox();
   });
 
-  /* Стартовая отправка очереди (если она осталась с прошлого раза) */
   flushOutbox();
-
   syncPull({ silent: true });
 
   if (__syncTimer) clearInterval(__syncTimer);
   __syncTimer = setInterval(() => {
-    /* Каждый pull — сначала пробуем отправить накопленное */
     flushOutbox();
     syncPull({ silent: true });
   }, SYNC_INTERVAL_MS);
